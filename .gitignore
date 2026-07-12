@@ -1,0 +1,23 @@
+# Simulation artifacts
+sim/
+*.vcd
+*.out
+*.vvp
+
+# FPGA / synthesis output
+obj_dir/
+*.jou
+*.log
+vivado*/
+.Xil/
+
+# Python
+__pycache__/
+*.pyc
+
+# MkDocs
+site/
+
+# FreeRTOS-Kernel is a fetched dependency (rtos/build_rtos.sh clones it on demand)
+rtos/FreeRTOS-Kernel/
+rtos/build/

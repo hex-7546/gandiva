@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & self-checking tests (Icarus Verilog)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # Smoke test: compile the core + SoC and run the self-checking program.
+      - name: Smoke test
+        run: bash build.sh
+
+      # Golden co-simulation: lock-step the RTL against the RV32IM ISA model.
+      - name: Golden co-simulation
+        run: bash build.sh cosim
+
+      # RVFI (RISC-V Formal Interface) self-check.
+      - name: RVFI self-check
+        run: bash build.sh rvfi

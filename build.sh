@@ -109,7 +109,7 @@ fi
 
 if [[ "$ACTION" == "fpga" ]]; then
   echo "Building FPGA SoC sim (UART banner + LED blink)..."
-  bash sw/build_fpga_hello.sh || true
+  bash sw/build_fpga_hello.sh
   "$IVL" -g2012 -DSIMULATION -I "$C" -I "$R" -o sim/tb_gandiva_fpga \
     "${CELLS[@]}" "${CORE[@]}" "$R/gandiva_uart.sv" \
     fpga/gandiva_fpga.sv fpga/tb_gandiva_fpga.sv

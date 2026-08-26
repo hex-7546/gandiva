@@ -203,9 +203,12 @@ module gandiva_core
   assign dbg_halted = dbg_mode;
   wire ebreak_to_debug = idex_valid && idex_is_ebreak && dcsr_ebreakm && !dbg_mode; // in EX
   wire step_halt_now = step_active && ifid_valid && !dbg_mode;   // one instr now in ID
-  // trig_to_debug: a hardware trigger (action=1) in EX wants to enter debug.
-  // Declared as a net here and assigned near the trigger instance below.
+  // trig_to_debug / trig_to_exc: hardware triggers in EX.
+  // Declared as nets here and assigned near the trigger instance below.
   wire trig_to_debug;
+  wire trig_to_exc;
+  wire trig_fire;
+  wire [XLEN-1:0] trig_tval_w;
   // any reason to squash the EX instruction and drain into debug entry.
   wire to_debug_now = ebreak_to_debug | trig_to_debug;
   wire dbg_freeze = dbg_mode | halt_req | (dbg_haltreq & ~dbg_mode) |
@@ -834,7 +837,6 @@ module gandiva_core
   // ==========================================================================
   localparam int unsigned NTRIG = 2;
   wire             trig_exec, trig_ldst, trig_action;
-  wire [XLEN-1:0]  trig_tval_w;
   wire [NTRIG-1:0] trig_fire_mask;
   // only check when EX holds a genuine, non-frozen instruction that isn't already
   // (architecturally) trapping and we're not already in/entering debug.
@@ -865,9 +867,9 @@ module gandiva_core
   // A trigger fires this cycle (either execute or load/store match).
   // action=1 => enter debug mode (independent of dcsr.ebreakm, which is
   // EBREAK-specific); action=0 => breakpoint exception.
-  wire trig_fire       = trig_exec || trig_ldst;
+  assign trig_fire     = trig_exec || trig_ldst;
   assign trig_to_debug = trig_fire &&  trig_action;
-  wire trig_to_exc     = trig_fire && !trig_action;
+  assign trig_to_exc   = trig_fire && !trig_action;
 
   // Redirect resolution (EX)
   wire [XLEN-1:0] jalr_target = (fwd_rs1 + idex_imm) & ~32'd1;

@@ -11,7 +11,7 @@
 # ============================================================================
 set -euo pipefail
 cd "$(dirname "$0")"
-IVL="${IVERILOG:-iverilog}"; VVP="${VVP:-vvp}"
+VERILATOR="${VERILATOR:-verilator --binary --timing -Wno-fatal -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-MULTIDRIVEN -j 4}"
 ACTION="${1:-sim}"
 
 R=rtl
@@ -41,7 +41,7 @@ if [[ "$ACTION" == "priv" ]]; then
   echo "Building Gandiva SECURE priv/PMP/N sim..."
   python programs/build_priv.py
   python programs/build_ntrap.py
-  "$IVL" -g2012 -I "$C" -I "$R" -o sim/tb_gandiva_priv \
+  $VERILATOR -I"$C" -I"$R" --Mdir sim -o tb_gandiva_priv \
     "${CELLS[@]}" "${CORE[@]}" tb/tb_gandiva_priv.sv 2>/dev/null
   fail=0
   for t in ustore_fault ustore_ok ecall_u ecall_m ifetch_fault ifetch_ok ucsr_u ucsr_m \
@@ -49,7 +49,7 @@ if [[ "$ACTION" == "priv" ]]; then
     hex=""
     [[ -f programs/build/priv_$t.hex  ]] && hex=programs/build/priv_$t.hex
     [[ -f programs/build/ntrap_$t.hex ]] && hex=programs/build/ntrap_$t.hex
-    r=$("$VVP" sim/tb_gandiva_priv +IMEM="$hex" 2>&1 | grep RESULT)
+    r=$(sim/tb_gandiva_priv +IMEM="$hex" 2>&1 | grep RESULT)
     printf "  %-16s %s\n" "$t" "$r"
     [[ "$r" == *PASS* ]] || fail=1
   done
@@ -66,15 +66,15 @@ if [[ "$ACTION" == "rtos" ]]; then
   bash rtos/build_rtos.sh
   bash rtos/build_rtos.sh neg
   echo "Running FreeRTOS demo + assertions..."
-  IVERILOG="$IVL" VVP="$VVP" python rtos/run_rtos.py
+  VERILATOR="$VERILATOR" python rtos/run_rtos.py
   exit $?
 fi
 
 if [[ "$ACTION" == "debug" ]]; then
   echo "Building Gandiva debug (JTAG DM) sim..."
-  "$IVL" -g2012 -I "$C" -I "$R" -o sim/tb_gandiva_debug \
+  $VERILATOR -I"$C" -I"$R" --Mdir sim -o tb_gandiva_debug \
     "${CELLS[@]}" "${CORE[@]}" "${SOC[@]}" tb/tb_gandiva_debug.sv
-  "$VVP" sim/tb_gandiva_debug
+  sim/tb_gandiva_debug
   exit 0
 fi
 
@@ -82,9 +82,9 @@ if [[ "$ACTION" == "trigger" ]]; then
   # Hardware debug triggers (Sdtrig / mcontrol6): PC-match + store-address
   # watchpoints driven over the JTAG TAP, with negative controls.
   echo "Building Gandiva hardware-trigger (Sdtrig/mcontrol6) sim..."
-  "$IVL" -g2012 -I "$C" -I "$R" -o sim/tb_gandiva_trigger \
+  $VERILATOR -I"$C" -I"$R" --Mdir sim -o tb_gandiva_trigger \
     "${CELLS[@]}" "${CORE[@]}" "${SOC[@]}" tb/tb_gandiva_trigger.sv
-  "$VVP" sim/tb_gandiva_trigger
+  sim/tb_gandiva_trigger
   exit 0
 fi
 
@@ -92,48 +92,48 @@ if [[ "$ACTION" == "axi" ]]; then
   # OPTIONAL AXI4-Lite MASTER bridge — standalone leaf cell + slave-mem BFM tb.
   # The default gandiva_soc + compliance path never instantiate it (unchanged).
   echo "Building Gandiva AXI4-Lite MASTER bridge sim..."
-  "$IVL" -g2012 -I "$C" -I "$R" -o sim/tb_gandiva_axi \
+  $VERILATOR -I"$C" -I"$R" --Mdir sim -o tb_gandiva_axi \
     "$C/gandiva_pkg.sv" "$R/gandiva_axi_lite.sv" tb/tb_gandiva_axi.sv
-  "$VVP" sim/tb_gandiva_axi
+  sim/tb_gandiva_axi
   exit 0
 fi
 
 if [[ "$ACTION" == "ecc" ]]; then
   # SECDED-protected register file leaf cell: single-bit correct, double detect.
   echo "Building Gandiva regfile ECC (SECDED) unit sim..."
-  "$IVL" -g2012 -I "$C" -o sim/tb_regfile_ecc \
+  $VERILATOR -I"$C" --Mdir sim -o tb_regfile_ecc \
     "$C/gandiva_pkg.sv" "$C/gandiva_regfile_ecc.sv" tb/tb_regfile_ecc.sv
-  "$VVP" sim/tb_regfile_ecc
+  sim/tb_regfile_ecc
   exit 0
 fi
 
 if [[ "$ACTION" == "fpga" ]]; then
   echo "Building FPGA SoC sim (UART banner + LED blink)..."
   bash sw/build_fpga_hello.sh
-  "$IVL" -g2012 -DSIMULATION -I "$C" -I "$R" -o sim/tb_gandiva_fpga \
+  $VERILATOR -DSIMULATION -I"$C" -I"$R" --Mdir sim -o tb_gandiva_fpga \
     "${CELLS[@]}" "${CORE[@]}" "$R/gandiva_uart.sv" \
     fpga/gandiva_fpga.sv fpga/tb_gandiva_fpga.sv
-  "$VVP" sim/tb_gandiva_fpga
+  sim/tb_gandiva_fpga
   exit 0
 fi
 
 # ---- default: smoke (+ optional cosim / rvfi) ------------------------------
 python programs/build_smoke.py
 echo "Compiling..."
-"$IVL" -g2012 -I "$C" -I "$R" -o sim/tb_gandiva \
+$VERILATOR -I"$C" -I"$R" --Mdir sim -o tb_gandiva \
   "${CELLS[@]}" "${CORE[@]}" "${SOC[@]}" tb/tb_gandiva.sv
 echo "Running smoke..."
-"$VVP" sim/tb_gandiva +IMEM=programs/build/smoke.hex
+sim/tb_gandiva +IMEM=programs/build/smoke.hex
 
 if [[ "$ACTION" == "cosim" ]]; then
   echo "Co-simulating against golden model..."
-  VVP="$VVP" python tools/cosim.py \
+  VERILATOR="$VERILATOR" python tools/cosim.py \
       --hex programs/build/smoke.hex --sim sim/tb_gandiva
 fi
 
 if [[ "$ACTION" == "rvfi" ]]; then
   echo "Building RVFI (riscv-formal interface) self-check..."
-  "$IVL" -g2012 -DRISCV_FORMAL -I "$C" -I "$R" -o sim/tb_gandiva_rvfi \
+  $VERILATOR -DRISCV_FORMAL -I"$C" -I"$R" --Mdir sim -o tb_gandiva_rvfi \
     "${CELLS[@]}" "${CORE[@]}" "${SOC[@]}" tb/tb_gandiva_rvfi.sv
-  "$VVP" sim/tb_gandiva_rvfi +IMEM=programs/build/smoke.hex
+  sim/tb_gandiva_rvfi +IMEM=programs/build/smoke.hex
 fi

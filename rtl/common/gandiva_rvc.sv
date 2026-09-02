@@ -5,7 +5,7 @@
 `default_nettype none
 
 module gandiva_rvc (
-  input  logic [15:0] instr16,
+  input  wire logic [15:0] instr16,
   output logic [31:0] instr32,
   output logic        is_compressed,
   output logic        decomp_illegal

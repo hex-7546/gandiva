@@ -30,9 +30,11 @@ def main():
     ap.add_argument("--max", type=int, default=100000)
     a = ap.parse_args()
 
+    cmd = [a.sim, f"+IMEM={a.hex}", "+TRACE=1"]
+    if a.vvp:
+        cmd.insert(0, a.vvp)
     rtl_raw = subprocess.run(
-        [a.vvp, a.sim, f"+IMEM={a.hex}", "+TRACE=1"],
-        capture_output=True, text=True).stdout
+        cmd, capture_output=True, text=True).stdout
     gold_raw = subprocess.run(
         [sys.executable, a.golden, a.hex, str(a.max)],
         capture_output=True, text=True).stdout

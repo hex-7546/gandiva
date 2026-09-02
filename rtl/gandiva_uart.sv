@@ -22,14 +22,14 @@ module gandiva_uart #(
   parameter int BAUD         = 115_200,
   parameter int BAUD_DIV_RST = CLK_HZ / BAUD
 )(
-  input  logic       clk, rst,
-  input  logic [3:0] addr,     // byte offset within the UART window
-  input  logic [7:0] wdata,
-  input  logic       we,
-  input  logic       re,
+  input  wire       clk, rst,
+  input  wire [3:0] addr,     // byte offset within the UART window
+  input  wire [7:0] wdata,
+  input  wire       we,
+  input  wire       re,
   output logic [7:0] rdata,
   output logic       serial_tx,
-  input  logic       serial_rx,
+  input  wire       serial_rx,
   output logic       tx_irq,
   output logic       rx_irq
 );

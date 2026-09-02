@@ -32,7 +32,7 @@ module gandiva_fpga
 );
   localparam int AW = $clog2(MEM_WORDS);
 
-  (* ram_style = "distributed" *) reg [31:0] mem [0:MEM_WORDS-1];
+  (* ram_style = "block" *) reg [31:0] mem [0:MEM_WORDS-1];
   initial if (MEMFILE != "") $readmemh(MEMFILE, mem);
 
   wire [31:0] imem_addr, imem_rdata;

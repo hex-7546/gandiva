@@ -11,6 +11,9 @@
 #define HAS_PRINTF 0
 
 #define COMPILER_VERSION "GCC"
+#ifndef FLAGS_STR
+#define FLAGS_STR "unknown"
+#endif
 #define COMPILER_FLAGS FLAGS_STR
 #define MEM_LOCATION "DRAM"
 
@@ -65,6 +68,8 @@ int ee_printf(const char *fmt, ...);
 void uart_send_char(char c);
 #define uart_send_char uart_send_char
 
+#ifndef EE_TICKS_PER_SEC
 #define EE_TICKS_PER_SEC 50000000
+#endif
 
 #endif /* CORE_PORTME_H */

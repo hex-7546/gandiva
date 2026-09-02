@@ -360,8 +360,8 @@ for (i = 0; i < MULTITHREAD; i++)
     ee_printf("Total cycles     : %lu\n", (long unsigned)total_time);
     ee_printf("Cycles/Iteration : %lu\n", (long unsigned)(total_time / results[0].iterations));
     ee_printf("CoreMark/MHz     : %lu.%02lu\n", 
-              (long unsigned)((results[0].iterations * 1000000) / total_time),
-              (long unsigned)(((results[0].iterations * 100000000) / total_time) % 100));
+              (long unsigned)((results[0].iterations * 1000000ULL) / total_time),
+              (long unsigned)(((results[0].iterations * 100000000ULL) / total_time) % 100));
 #if HAS_FLOAT
     ee_printf("Total time (secs): %f\n", time_in_secs(total_time));
     if (time_in_secs(total_time) > 0)

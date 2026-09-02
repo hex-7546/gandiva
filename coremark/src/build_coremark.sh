@@ -22,14 +22,16 @@ if ! command -v "$GCC" &>/dev/null; then
   fi
 fi
 
-FLAGS="-O3 -march=rv32imc -mabi=ilp32 -nostartfiles -fno-pic -Wl,--no-relax"
+FLAGS="-O2 -march=rv32imc -mabi=ilp32 -nostartfiles -fno-pic -Wl,--no-relax"
 INCLUDES="-I. -Ibarebones"
 
 echo "Compiling CoreMark for Gandiva..."
 
 ITERATIONS="${1:-1}"
 
-"$GCC" $FLAGS $INCLUDES -T link.ld \
+LDSCRIPT="${LDSCRIPT:-link.ld}"
+
+"$GCC" $FLAGS $INCLUDES -T "$LDSCRIPT" \
     -DITERATIONS=$ITERATIONS -DFLAGS_STR="\"$FLAGS\"" \
     start.S \
     core_portme.c \

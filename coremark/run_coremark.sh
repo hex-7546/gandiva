@@ -2,6 +2,6 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 echo "Building CoreMark for simulation (10 iterations)..."
-./src/build_coremark.sh 10
+./src/build_coremark.sh 1000
 echo "Running CoreMark on Gandiva simulation..."
 ../sim/tb_gandiva +IMEM=src/coremark.hex

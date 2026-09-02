@@ -1,7 +1,13 @@
 # =============================================================================
-# gandiva_arty_a7.tcl — Vivado batch flow to a BITSTREAM for the Arty A7-100T.
-#   vivado -mode batch -source gandiva_arty_a7.tcl -tclargs <BUILD_DIR>
-# Build firmware first: cd sw && ./build_fpga_hello.sh && cp firmware.mem <BUILD_DIR>/
+# gandiva_arty_a7_synth.tcl — One-time full synthesis + route, saves routed
+#   checkpoint (.dcp) so subsequent firmware swaps only need write_bitstream.
+#
+#   vivado -mode batch -source gandiva_arty_a7_synth.tcl -tclargs <BUILD_DIR>
+#
+# Produces:
+#   <BUILD_DIR>/route.dcp        — routed checkpoint (reused for re-bitstreams)
+#   <BUILD_DIR>/gandiva_arty_a7.bit — initial bitstream
+#   <BUILD_DIR>/util.rpt / timing.rpt
 # =============================================================================
 set fpga_dir  [file normalize [file dirname [info script]]]
 set build_dir [file normalize [expr {[llength $argv] >= 1 ? [lindex $argv 0] : "$fpga_dir/build"}]]
@@ -34,8 +40,14 @@ synth_design -top gandiva_arty_a7 -part $part
 opt_design
 place_design
 route_design
-write_checkpoint -force $build_dir/route.dcp
 report_utilization    -file $build_dir/util.rpt
 report_timing_summary -file $build_dir/timing.rpt
+
+# Save routed checkpoint — reused as incremental reference for per-benchmark runs.
+write_checkpoint -force $build_dir/route.dcp
+puts "Checkpoint saved: $build_dir/route.dcp"
+
+# Write base bitstream.
 write_bitstream -force $build_dir/gandiva_arty_a7.bit
 puts "DONE: $build_dir/gandiva_arty_a7.bit"
+

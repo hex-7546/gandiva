@@ -45,7 +45,7 @@ module tb_gandiva;
     if ($value$plusargs("TRACE=%d", trace_en)) ;
 
     // clear memories
-    for (i = 0; i < 8192; i = i + 1) begin
+    for (i = 0; i < 16384; i = i + 1) begin
       dut.imem[i] = 32'h0000_0013;   // NOP fill
       dut.dram[i] = 32'h0;
     end
@@ -82,7 +82,7 @@ module tb_gandiva;
       else                 $display("[TB] FAIL (code %0d)", tohost);
       $finish;
     end
-    if (cycle > 20000000) begin   // raised for CoreMark (one iteration ~0.3-0.5M cyc)
+    if (cycle > 1000000000) begin   // 1B cycles (supports 1000+ CoreMark iterations)
       $display("[TB] TIMEOUT — no tohost write");
       $finish;
     end

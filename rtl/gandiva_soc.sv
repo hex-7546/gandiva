@@ -17,8 +17,8 @@
 module gandiva_soc
   import gandiva_pkg::*;
 #(
-  parameter int unsigned IMEM_WORDS = 8192,
-  parameter int unsigned DRAM_WORDS = 8192,
+  parameter int unsigned IMEM_WORDS = 16384,
+  parameter int unsigned DRAM_WORDS = 16384,
   parameter logic [XLEN-1:0] DRAM_BASE   = 32'h8000_0000,
   parameter logic [XLEN-1:0] TOHOST_ADDR = 32'h2000_0000,
   parameter logic [XLEN-1:0] UART_BASE   = 32'h1000_0000

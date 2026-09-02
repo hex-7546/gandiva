@@ -127,7 +127,7 @@ sim/tb_gandiva +IMEM=programs/build/smoke.hex
 
 if [[ "$ACTION" == "cosim" ]]; then
   echo "Co-simulating against golden model..."
-  VERILATOR="$VERILATOR" python tools/cosim.py \
+  VVP="" VERILATOR="$VERILATOR" python tools/cosim.py \
       --hex programs/build/smoke.hex --sim sim/tb_gandiva
 fi
 

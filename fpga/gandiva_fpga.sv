@@ -59,7 +59,11 @@ module gandiva_fpga
     .dbg_ar_regno(12'd0), .dbg_ar_wdata(32'd0), .dbg_ar_rdata(), .dbg_ar_done()
   );
 
-  assign imem_rdata = mem[imem_addr[AW+1:2]];
+  reg [31:0] imem_rdata_ram;
+  always_ff @(negedge clk) begin
+    imem_rdata_ram <= mem[imem_addr[AW+1:2]];
+  end
+  assign imem_rdata = imem_rdata_ram;
 
   wire in_ram    = (dmem_addr < MEM_WORDS*4);
   wire uart_sel  = (dmem_addr[31:16] == 16'h1000);
@@ -67,6 +71,19 @@ module gandiva_fpga
   wire led_sel   = (dmem_addr == 32'h2000_1000);
   wire tohost_sel= (dmem_addr == 32'h2000_0000);
   wire [AW-1:0] didx = dmem_addr[AW+1:2];
+
+  reg [31:0] dmem_rdata_ram;
+  always_ff @(negedge clk) begin
+    if (in_ram) begin
+      if (dmem_we) begin
+        if (dmem_be[0]) mem[didx][7:0]   <= dmem_wdata[7:0];
+        if (dmem_be[1]) mem[didx][15:8]  <= dmem_wdata[15:8];
+        if (dmem_be[2]) mem[didx][23:16] <= dmem_wdata[23:16];
+        if (dmem_be[3]) mem[didx][31:24] <= dmem_wdata[31:24];
+      end
+      dmem_rdata_ram <= mem[didx];
+    end
+  end
 
   wire [7:0] uart_rdata; wire uart_tx_irq, uart_rx_irq;
   gandiva_uart #(.CLK_HZ(CLK_HZ), .BAUD(UART_BAUD)) u_uart (
@@ -86,7 +103,7 @@ module gandiva_fpga
   always_comb begin
     if      (uart_sel)  dmem_rdata = {24'h0, uart_rdata};
     else if (clint_sel) dmem_rdata = clint_rdata;
-    else if (in_ram)    dmem_rdata = mem[didx];
+    else if (in_ram)    dmem_rdata = dmem_rdata_ram;
     else                dmem_rdata = 32'h0;
   end
 
@@ -97,12 +114,7 @@ module gandiva_fpga
     end else begin
       mtime <= mtime + 64'd1;
       if (dmem_we) begin
-        if (in_ram) begin
-          if (dmem_be[0]) mem[didx][7:0]   <= dmem_wdata[7:0];
-          if (dmem_be[1]) mem[didx][15:8]  <= dmem_wdata[15:8];
-          if (dmem_be[2]) mem[didx][23:16] <= dmem_wdata[23:16];
-          if (dmem_be[3]) mem[didx][31:24] <= dmem_wdata[31:24];
-        end else if (clint_sel) begin
+        if (clint_sel) begin
           if (dmem_addr[15:0]==16'h0000) msip           <= dmem_wdata[0];
           if (dmem_addr[15:0]==16'h4000) mtimecmp[31:0] <= dmem_wdata;
           if (dmem_addr[15:0]==16'h4004) mtimecmp[63:32]<= dmem_wdata;

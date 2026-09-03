@@ -23,6 +23,8 @@ rtos/FreeRTOS-Kernel/
 rtos/build/
 
 # RISCV toolchain generated object files
-sw/*.elf
-sw/*.bin
-sw/*.mem
+*.elf
+*.bin
+*.mem
+*.hex
+*.o

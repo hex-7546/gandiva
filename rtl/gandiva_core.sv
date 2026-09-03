@@ -1201,8 +1201,8 @@ module gandiva_core
     always_ff @(posedge clk) begin
       if (rst) begin
         ghist <= '0;
-        for (bi = 0; bi < BHT_ENTRIES; bi = bi + 1) bht[bi] <= 2'b01; // weakly N-T
-        for (bi = 0; bi < BTB_ENTRIES; bi = bi + 1) btb_valid[bi] <= 1'b0;
+        for (bi = 0; bi < BHT_ENTRIES; bi = bi + 1) bht[bi] = 2'b01; // weakly N-T
+        for (bi = 0; bi < BTB_ENTRIES; bi = bi + 1) btb_valid[bi] = 1'b0;
       end else if (bp_upd_en) begin
         // BHT: 2-bit saturating counter toward the actual direction (cond only)
         if (bp_upd_cond) begin

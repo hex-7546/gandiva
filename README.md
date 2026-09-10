@@ -2,6 +2,8 @@
 
 # Gandiva RISC-V Processor Core
 
+![alt text](gandiva-banner.png)
+
 **An Industrial-Grade, Golden-Verified 5-Stage RV32IMACB Processor**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

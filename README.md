@@ -154,8 +154,7 @@ gandiva/
 ├── rtos/                       # FreeRTOS port, BSP, and automated preemption test
 ├── docs/                       # Complete documentation site (MkDocs)
 ├── docs.md                     # Comprehensive Technical Reference Manual
-├── build.sh                    # Linux/macOS unified build and test driver
-└── build.ps1                   # Windows PowerShell build and test driver
+└── build.sh                    # Unified build and test driver
 ```
 
 ---
@@ -217,7 +216,6 @@ The unified driver `./build.sh` provides one-line commands for testing individua
 ./build.sh clean     # Clean simulation artifacts and build directories
 ```
 
-*(On Windows, run the corresponding command with PowerShell: `.\build.ps1 sim`, `.\build.ps1 cosim`, etc.)*
 
 ---
 

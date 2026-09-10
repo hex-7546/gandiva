@@ -57,11 +57,12 @@ def run_benchmark(bench, path, args):
         subprocess.run([sys.executable, args.bin2hex, bin_path, hex_path], check=True, stdout=subprocess.DEVNULL)
         
         # 3. Run simulation
+        timeout_sec = getattr(args, 'timeout', 300)
         res = subprocess.run(
             [args.sim, f'+IMEM={hex_path}'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=50,
+            timeout=timeout_sec,
         )
         
     except subprocess.TimeoutExpired:

@@ -17,14 +17,13 @@
 
 ## Key Features
 
-- **5-Stage In-Order Pipeline**: Classic single-issue `IF → ID → EX → MEM → WB` datapath with full operand forwarding and single-cycle load-use hazard penalty.
-- **Complete RV32IMACB Architecture**: Base integer (`I`), hardware multiply/divide (`M`), atomics (`A`), compressed instructions (`C`), `Zicsr`, and the full ratified bit-manipulation suite (`Zba`, `Zbb`, `Zbc`, `Zbs`).
-- **Dynamic Branch Prediction**: Advanced front-end engine featuring a 256-entry gshare direction predictor, 64-entry RVC-safe halfword-indexed BTB, and a hardware Return Address Stack (RAS).
-- **Security & Memory Protection**: Machine (`M`) mode baseline; optional `SECURE` configuration adds User (`U`) mode, User-level trap delegation (`N`), and an 8-region PMP/ePMP unit (`mseccfg`).
-- **Fault-Tolerant Reliability**: Optional SECDED ECC parity protection on the register file (single-error correction, double-error detection).
-- **Hardware Misaligned Memory Support**: Transparent two-beat memory sequencing for unaligned loads and stores without invoking costly trap handlers.
-- **On-Chip Debug & Triggers**: RISC-V External Debug 0.13 compliant (JTAG TAP, DTM, Debug Module with system-bus access) and `Sdtrig` execution breakpoints & data watchpoints (`mcontrol6`).
-- **System Interconnect & RTOS**: Native high-throughput memory bus with drop-in AXI4-Lite master bridge, plus a verified, turnkey **FreeRTOS** port.
+- **5-Stage Pipeline**: Single-issue `IF → ID → EX → MEM → WB` with full operand forwarding.
+- **RV32IMACB + Zicsr**: Full support for `I`, `M`, `A`, `C`, `Zicsr`, and ratified bit-manipulation (`Zba`, `Zbb`, `Zbc`, `Zbs`).
+- **Dynamic Branch Prediction**: 256-entry gshare predictor, 64-entry BTB, and hardware RAS.
+- **Privilege & Security**: M/U modes, User trap delegation (`N`), and 8-region PMP/ePMP (`mseccfg`).
+- **Reliability & Misaligned Access**: Optional SECDED ECC register file and hardware unaligned load/store support.
+- **Debug & Triggers**: RISC-V Debug 0.13 (JTAG TAP/DM) and `Sdtrig` hardware breakpoints/watchpoints (`mcontrol6`).
+- **Interconnect & RTOS**: Native memory bus, drop-in AXI4-Lite master bridge, and turnkey FreeRTOS port.
 
 > For comprehensive microarchitectural descriptions, instruction encodings, CSR listings, and circuit details, please see **[docs.md](docs.md)**.
 

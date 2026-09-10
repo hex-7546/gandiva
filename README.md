@@ -6,8 +6,15 @@
 
 **An Industrial-Grade, Golden-Verified 5-Stage RV32IMACB Processor**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![ISA: RV32IMACB](https://img.shields.io/badge/ISA-RV32IMACB__Zicsr-orange.svg)](docs/isa.md)
+
+<p align="center">
+  <img src="https://img.shields.io/badge/ISA-RV32IMACB-orange" alt="ISA"/>
+  <img src="https://img.shields.io/badge/Extensions-Zicsr-blue" alt="Extensions"/>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow" alt="License: MIT"/></a>
+  <a href="https://www.linkedin.com/company/open-risc-v/"><img src="https://img.shields.io/badge/LinkedIn-Follow-0077B5" alt="LinkedIn Follow"/></a>
+  <a href="https://or5.org"><img src="https://img.shields.io/badge/Visit-or5.org-purple?logo=google-chrome" alt="Visit or5.org"/></a>
+  
+</p>
 </div>
 
 ---

@@ -15,18 +15,9 @@ The benchmark suite is compiled for a 32-bit RISC-V target with the `IMC` and `Z
   -O2 -ffunction-sections -fdata-sections -march=rv32imc_zicsr -mabi=ilp32 -Wl,--gc-sections -static
   ```
 
-  - `-O2`: Standard optimization level for performance without excessive code size bloat.
-  - `-ffunction-sections` & `-fdata-sections`: Places each function and data item into its own section, allowing the linker to perform dead code elimination.
-  - `-Wl,--gc-sections`: Instructs the linker to garbage collect unused sections, reducing final binary size.
-  - `-march=rv32imc_zicsr`: Enables the base 32-bit integer instruction set, hardware multiply/divide (`M`), compressed 16-bit instructions (`C`), and CSR instructions (`Zicsr`).
-  - `-mabi=ilp32`: Uses the standard 32-bit application binary interface.
-  - `-static`: statically links the executables.
-
 ## Performance Results
 
 Gandiva achieves a geometric mean score of **0.96 Embench Speed/MHz** across all 19 benchmarks. 
-
-*Note: Embench Speed scores are relative to a baseline ARM Cortex-M4 execution.*
 
 ### Benchmark Breakdown
 
@@ -63,7 +54,7 @@ Gandiva achieves a geometric mean score of **0.96 Embench Speed/MHz** across all
 - **Environment**: Bare-metal execution on the Arty A7 FPGA running at 25 MHz.
 - **Execution**: Embench standard Python test harness (`benchmark_speed.py`)
 - **Geometric Mean (Speed/MHz)**: 0.96
-- **Note**: The core is identical on FPGA and simulation, meaning the IPC (Instructions Per Cycle) and resulting normalized Speed/MHz score are exactly identical. 
+
 
 ## Directory Layout
 

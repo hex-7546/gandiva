@@ -15,13 +15,6 @@ The benchmark is compiled for a 32-bit RISC-V target with the `IMC` extensions (
   -O2 -march=rv32imc -mabi=ilp32 -nostartfiles -fno-pic -Wl,--no-relax
   ```
 
-  - `-O2`: Standard optimization level for performance without excessive code size bloat.
-  - `-march=rv32imc`: Enables the base 32-bit integer instruction set, hardware multiply/divide (`M`), and compressed 16-bit instructions (`C`).
-  - `-mabi=ilp32`: Uses the standard 32-bit application binary interface.
-  - `-nostartfiles`: Skips the standard C library startup code (we provide our own `start.S`).
-  - `-fno-pic`: Disables position-independent code (unnecessary for bare-metal and improves performance).
-  - `-Wl,--no-relax`: Disables linker relaxation to prevent the linker from optimizing global pointer accesses in a way that might conflict with our custom linker script.
-
 ## Performance Results
 
 Gandiva achieves a score of **1.64 DMIPS/MHz** across both simulation and FPGA execution.

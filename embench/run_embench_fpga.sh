@@ -19,16 +19,22 @@ for arg in "$@"; do
 done
 
 # ── Toolchain ────────────────────────────────────────────────────────────────
-TC="${RISCV_TC:-/home/yash/toolchains/xpack-riscv-none-elf-gcc-13.2.0-2/bin}"
-GCC="${GCC:-$TC/riscv-none-elf-gcc}"
+TC_PREFIX="${RISCV_TC:+$RISCV_TC/}"
+GCC="${GCC:-}"
 
-if ! command -v "$GCC" &>/dev/null; then
-    if command -v riscv-none-elf-gcc &>/dev/null; then
+if [[ -z "$GCC" ]]; then
+    if [[ -n "$TC_PREFIX" ]] && command -v "${TC_PREFIX}riscv-none-elf-gcc" &>/dev/null; then
+        GCC="${TC_PREFIX}riscv-none-elf-gcc"
+    elif [[ -n "$TC_PREFIX" ]] && command -v "${TC_PREFIX}riscv32-unknown-elf-gcc" &>/dev/null; then
+        GCC="${TC_PREFIX}riscv32-unknown-elf-gcc"
+    elif command -v riscv-none-elf-gcc &>/dev/null; then
         GCC="riscv-none-elf-gcc"
     elif command -v riscv32-unknown-elf-gcc &>/dev/null; then
         GCC="riscv32-unknown-elf-gcc"
     else
-        echo "ERROR: RISC-V GCC toolchain not found." >&2; exit 1
+        echo "ERROR: RISC-V GCC toolchain not found." >&2
+        echo "Please add riscv-none-elf-gcc or riscv32-unknown-elf-gcc to PATH, or set RISCV_TC or GCC." >&2
+        exit 1
     fi
 fi
 OBJCOPY="${GCC%-gcc}-objcopy"

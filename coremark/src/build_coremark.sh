@@ -2,24 +2,32 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-TC="${RISCV_TC:-/home/yash/toolchains/xpack-riscv-none-elf-gcc-13.2.0-2/bin}"
-GCC="${GCC:-$TC/riscv-none-elf-gcc}"
-OBJCOPY="${OBJCOPY:-$TC/riscv-none-elf-objcopy}"
+TC_PREFIX="${RISCV_TC:+$RISCV_TC/}"
+GCC="${GCC:-}"
+OBJCOPY="${OBJCOPY:-}"
 
-# Check for GCC availability
-if ! command -v "$GCC" &>/dev/null && ! command -v riscv-none-elf-gcc &>/dev/null && ! command -v riscv32-unknown-elf-gcc &>/dev/null; then
-  echo "ERROR: RISC-V GCC toolchain not found!" >&2
-  exit 1
-fi
-
-if ! command -v "$GCC" &>/dev/null; then
-  if command -v riscv-none-elf-gcc &>/dev/null; then
+if [[ -z "$GCC" ]]; then
+  if [[ -n "$TC_PREFIX" ]] && command -v "${TC_PREFIX}riscv-none-elf-gcc" &>/dev/null; then
+    GCC="${TC_PREFIX}riscv-none-elf-gcc"
+    OBJCOPY="${OBJCOPY:-${TC_PREFIX}riscv-none-elf-objcopy}"
+  elif [[ -n "$TC_PREFIX" ]] && command -v "${TC_PREFIX}riscv32-unknown-elf-gcc" &>/dev/null; then
+    GCC="${TC_PREFIX}riscv32-unknown-elf-gcc"
+    OBJCOPY="${OBJCOPY:-${TC_PREFIX}riscv32-unknown-elf-objcopy}"
+  elif command -v riscv-none-elf-gcc &>/dev/null; then
     GCC="riscv-none-elf-gcc"
-    OBJCOPY="riscv-none-elf-objcopy"
+    OBJCOPY="${OBJCOPY:-riscv-none-elf-objcopy}"
   elif command -v riscv32-unknown-elf-gcc &>/dev/null; then
     GCC="riscv32-unknown-elf-gcc"
-    OBJCOPY="riscv32-unknown-elf-objcopy"
+    OBJCOPY="${OBJCOPY:-riscv32-unknown-elf-objcopy}"
+  else
+    echo "ERROR: RISC-V GCC toolchain not found!" >&2
+    echo "Please add riscv-none-elf-gcc or riscv32-unknown-elf-gcc to PATH, or set RISCV_TC or GCC." >&2
+    exit 1
   fi
+fi
+
+if [[ -z "$OBJCOPY" ]]; then
+  OBJCOPY="${GCC%-gcc}-objcopy"
 fi
 
 FLAGS="-O2 -march=rv32imc -mabi=ilp32 -nostartfiles -fno-pic -Wl,--no-relax"
